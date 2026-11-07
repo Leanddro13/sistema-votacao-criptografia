@@ -1,0 +1,100 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{xcolor}
+
+\geometry{top=2.5cm, bottom=2.5cm, left=3cm, right=3cm}
+
+\title{\textbf{Especificação de Arquitetura e Plano de Desenvolvimento}\\
+\large Sistema de Votação Eletrônica Seguro - Criptografia}
+\author{Proposta de Projeto}
+\date{Novembro de 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+Este documento especifica a arquitetura e o roteiro de implementação de um sistema de votação eletrônica seguro. O sistema garante o sigilo do voto, a integridade da eleição, a verificabilidade individual e a auditabilidade pública, utilizando ElGamal Exponencial, assinaturas RSA, funções hash (SHA-256) e compartilhamento de chaves via protocolo inspirado em Diffie-Hellman.
+
+\section{Arquitetura do Sistema}
+
+A arquitetura é descentralizada em relação à confiança, dividindo-se em cinco componentes lógicos principais para impedir o controle absoluto por um único agente.
+
+\subsection{Entidades e Responsabilidades}
+\begin{itemize}
+    \item \textbf{Servidor de Votação (Administrador):} Gerencia as conexões, verifica a elegibilidade, garante a unicidade dos votos, anexa os votos válidos ao Quadro Público e emite recibos assinados. Não possui capacidade de decifrar cédulas.
+    \item \textbf{Autoridades Eleitorais ($N \ge 3$):} Entidades que detêm fragmentos da chave privada. Participam do setup inicial para compor a chave pública da eleição e, ao final, fornecem decifrações parciais da soma dos votos.
+    \item \textbf{Cliente (Eleitor):} Interface que capta a intenção de voto, aplica a cifragem ElGamal Exponencial individualmente para cada candidato (vetor de opções), assina a cédula via RSA e submete ao servidor.
+    \item \textbf{Quadro Público (Bulletin Board):} Estrutura de dados pública de acréscimo (\textit{append-only}). Armazena a identidade pública do eleitor, a cédula cifrada, a assinatura digital do eleitor e o hash criptográfico encadeado (vinculando ao registro anterior).
+    \item \textbf{Auditor Independente:} Aplicação executada externamente que consome o Quadro Público, verifica toda a cadeia de hashes, valida assinaturas RSA e audita a contagem homomórfica dos votos de forma independente.
+\end{itemize}
+
+\subsection{Especificações Criptográficas}
+\begin{itemize}
+    \item \textbf{Grupo Cíclico:} Primo $p$ de pelo menos 2048 bits com um gerador $g$.
+    \item \textbf{Cifragem:} ElGamal Exponencial. Cifra de $m \in \{0, 1\}$ é definida como $(c_1, c_2) = (g^r \bmod p, g^m \cdot h^r \bmod p)$.
+    \item \textbf{Assinaturas Digitais:} Padrão RSA com chaves de 2048 bits para os eleitores e para o servidor.
+    \item \textbf{Hash Criptográfico:} SHA-256 para encadeamento do Quadro Público e assinatura.
+\end{itemize}
+
+\section{Plano de Desenvolvimento e Tasks}
+
+O projeto deve ser implementado de forma modular, seguindo uma ordem cronológica que garante o funcionamento das primitivas matemáticas antes da integração das entidades.
+
+\subsection{Fase 1: Primitivas Matemáticas e Criptográficas}
+Nesta fase, a base matemática isolada do sistema é implementada.
+\begin{itemize}[label=$\square$]
+    \item \textbf{Task 1.1:} Implementar geração de parâmetros do grupo (primo $p$ de 2048 bits e gerador $g$) criptograficamente seguros.
+    \item \textbf{Task 1.2:} Desenvolver módulo para manipulação de chaves RSA e validação de assinaturas.
+    \item \textbf{Task 1.3:} Implementar funções fundamentais do ElGamal Exponencial (exponenciação modular, inverso modular).
+    \item \textbf{Task 1.4:} Implementar função de decifração baseada em busca exaustiva (força bruta) do logaritmo discreto para pequenos expoentes (contagem total dos votos $g^M$).
+\end{itemize}
+
+\subsection{Fase 2: Configuração e Setup da Eleição}
+Integração das entidades Autoridade e Servidor.
+\begin{itemize}[label=$\square$]
+    \item \textbf{Task 2.1:} Implementar rotina das Autoridades para geração da chave privada $x_i$ e submissão da chave pública parcial $h_i$.
+    \item \textbf{Task 2.2:} Implementar rotina do Servidor para receber $h_1, h_2, \dots, h_n$ e calcular a chave pública conjunta $h = \prod h_i \bmod p$.
+    \item \textbf{Task 2.3:} Criar rotina de geração de pares de chaves RSA para um conjunto predefinido de eleitores (cadastro inicial e lista de elegibilidade).
+\end{itemize}
+
+\subsection{Fase 3: Sistema de Votação e Quadro Público}
+Implementação do fluxo principal entre Eleitor e Servidor.
+\begin{itemize}[label=$\square$]
+    \item \textbf{Task 3.1:} Modelar a estrutura do Quadro Público em formato serializável (ex: JSON).
+    \item \textbf{Task 3.2:} Implementar a lógica do Eleitor: criar o vetor de votos (1 para o escolhido, 0 para os demais), gerar $r$ aleatório para cada um, cifrar as cédulas e aplicar assinatura RSA no pacote.
+    \item \textbf{Task 3.3:} Implementar a validação no Servidor: conferir elegibilidade (ID existe), unicidade (ID não votou), e verificar assinatura RSA.
+    \item \textbf{Task 3.4:} Implementar rotina do Servidor de calcular o hash SHA-256 (hash anterior + nova cédula), gravar no Quadro Público e retornar o recibo assinado ao eleitor.
+\end{itemize}
+
+\subsection{Fase 4: Apuração e Decifração Distribuída}
+Realização da apuração homomórfica sem revelação de chaves.
+\begin{itemize}[label=$\square$]
+    \item \textbf{Task 4.1:} Implementar rotina do Servidor para multiplicar os componentes $c_1$ e $c_2$ de todos os votos (por candidato) gerando $C_1$ e $C_2$.
+    \item \textbf{Task 4.2:} Implementar lógica das Autoridades para receber $C_1$ e calcular a decifração parcial $d_i = C_1^{x_i} \bmod p$.
+    \item \textbf{Task 4.3:} Implementar lógica do Servidor de receber os $d_i$, recuperar a máscara, extrair $g^M$ a partir de $C_2$ e usar a busca exaustiva (Task 1.4) para obter o resultado $M$.
+\end{itemize}
+
+\subsection{Fase 5: Auditoria e Interface CLI}
+Garantia de segurança e preparação para a demonstração.
+\begin{itemize}[label=$\square$]
+    \item \textbf{Task 5.1:} Desenvolver programa Auditor independente que realiza a leitura completa do Quadro Público em JSON.
+    \item \textbf{Task 5.2:} Implementar no Auditor a validação da cadeia de hashes do primeiro ao último bloco.
+    \item \textbf{Task 5.3:} Implementar no Auditor a verificação matemática homomórfica paralela.
+    \item \textbf{Task 5.4:} Desenvolver a Interface de Linha de Comando (CLI) unificada facilitando a simulação (votar, auditar, tentar alterar hash e apurar com falha de autoridade).
+\end{itemize}
+
+\subsection{Fase 6: Documentação Final}
+\begin{itemize}[label=$\square$]
+    \item \textbf{Task 6.1:} Escrever relatório técnico baseando-se no modelo de ameaças enfrentado durante a implementação (foco: fraude em votos $\neq 0/1$, conluio de autoridades e papel do recibo).
+\end{itemize}
+
+\end{document}
