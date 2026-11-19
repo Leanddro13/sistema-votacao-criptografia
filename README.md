@@ -1,6 +1,6 @@
 # Sistema de Votação Eletrônica Seguro
 
-Repositório desenvolvido para a disciplina de **Criptografia**.
+Repositório desenvolvido para a disciplina de **Segurança Computacional**.
 Implementação de um sistema de votação eletrônica seguro ponta a ponta com ElGamal Exponencial (cifragem aditivamente homomórfica), chave pública conjunta ($N \ge 3$ autoridades), Quadro Público (*Bulletin Board*) encadeado por SHA-256 e assinaturas digitais RSA.
 
 ---
