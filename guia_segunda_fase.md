@@ -459,12 +459,12 @@ Na especificação do trabalho, o professor fará perguntas individuais sobre a 
 
 ## 📋 Checklist de Conclusão da Fase 2
 
-- [ ] Task 2.1: Classe `AutoridadeEleitoral` implementada com geração de $x_i$ e cálculo de $h_i$
-- [ ] Task 2.2: Classe `ServidorVotacao` implementada com recebimento de $h_i$ e cálculo de $h$
-- [ ] Task 2.3: Classe `CadastroEleitores` implementada com geração de chaves RSA e lista de elegibilidade
-- [ ] Fluxo integrado testado: autoridades → servidor → cadastro de eleitores
-- [ ] Consistência matemática verificada: $h = g^{(\sum x_i)} \bmod p$
-- [ ] Todos os testes individuais passando
+- [x] Task 2.1: Classe `AutoridadeEleitoral` implementada com geração de $x_i$ e cálculo de $h_i$
+- [x] Task 2.2: Classe `ServidorVotacao` implementada com recebimento de $h_i$ e cálculo de $h$
+- [x] Task 2.3: Classe `CadastroEleitores` implementada com geração de chaves RSA e lista de elegibilidade
+- [x] Fluxo integrado testado: autoridades → servidor → cadastro de eleitores
+- [x] Consistência matemática verificada: $h = g^{(\sum x_i)} \bmod p$
+- [x] Todos os testes individuais passando
 
 ---
 
