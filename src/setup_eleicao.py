@@ -7,9 +7,7 @@ if str(_SRC_DIR) not in sys.path:
 
 from cripto_base import P, G, exp_mod, gerar_numero_aleatorio_seguro, gerar_par_chaves_rsa
 
-# =====================================================================
 # TASK 2.1: Rotina das Autoridades Eleitorais
-# =====================================================================
 
 class AutoridadeEleitoral:
     """
@@ -47,10 +45,18 @@ class AutoridadeEleitoral:
             'h_i': self.h_i
         }
 
+    def calcular_decifracao_parcial(self, C1: int, p: int = P) -> int:
+        """
+        [Task 4.2] Calcula a decifração parcial d_i = C1^(x_i) mod p.
+        Usado na apuração para permitir que o servidor remova a máscara
+        sem que a autoridade precise revelar sua chave privada x_i.
+        """
+        if self.x_i is None:
+            raise ValueError(f"Autoridade {self.id} ainda não gerou sua chave privada x_i!")
+        return exp_mod(C1, self.x_i, p)
 
-# =====================================================================
+
 # TASK 2.2: Rotina do Servidor de Votação
-# =====================================================================
 
 class ServidorVotacao:
     """
@@ -94,9 +100,7 @@ class ServidorVotacao:
         return self.h_conjunta
 
 
-# =====================================================================
 # TASK 2.3: Cadastro de Eleitores e Chaves RSA
-# =====================================================================
 
 class CadastroEleitores:
     """
@@ -172,9 +176,7 @@ class CadastroEleitores:
         return sum(1 for e in self.eleitores.values() if e['votou'])
 
 
-# =====================================================================
 # FLUXO COMPLETO DA FASE 2 - Setup da Eleição
-# =====================================================================
 
 def executar_setup_fase2(num_autoridades: int = 3, ids_eleitores: list = None):
     if num_autoridades < 3:
@@ -185,7 +187,7 @@ def executar_setup_fase2(num_autoridades: int = 3, ids_eleitores: list = None):
 
     print("=== INICIANDO SETUP DA FASE 2 ===\n")
 
-    # --- ETAPA A: Autoridades geram e submetem chaves públicas parciais ---
+    # ETAPA A: Autoridades geram e submetem chaves públicas parciais
     print("[Etapa A] Autoridades gerando chaves...")
     autoridades = [AutoridadeEleitoral(id_autoridade=i + 1) for i in range(num_autoridades)]
 
@@ -197,7 +199,7 @@ def executar_setup_fase2(num_autoridades: int = 3, ids_eleitores: list = None):
 
     print(f"  -> {num_autoridades} autoridades submeteram suas h_i\n")
 
-    # --- ETAPA B: Servidor calcula chave pública conjunta ---
+    # ETAPA B: Servidor calcula chave pública conjunta
     print("[Etapa B] Servidor calculando chave pública conjunta...")
     servidor = ServidorVotacao()
 
@@ -207,7 +209,7 @@ def executar_setup_fase2(num_autoridades: int = 3, ids_eleitores: list = None):
     h_conjunta = servidor.calcular_chave_publica_conjunta()
     print("  -> Chave pública conjunta h calculada\n")
 
-    # --- ETAPA C: Cadastro inicial de eleitores ---
+    # ETAPA C: Cadastro inicial de eleitores
     print("[Etapa C] Cadastro inicial de eleitores...")
     cadastro = CadastroEleitores()
     chaves_eleitores = cadastro.cadastrar_lote_eleitores(ids_eleitores)
@@ -226,9 +228,7 @@ def executar_setup_fase2(num_autoridades: int = 3, ids_eleitores: list = None):
     return autoridades, servidor, cadastro, h_conjunta
 
 
-# =====================================================================
 # TESTES DA FASE 2
-# =====================================================================
 
 if __name__ == "__main__":
     autoridades, servidor, cadastro, h = executar_setup_fase2()

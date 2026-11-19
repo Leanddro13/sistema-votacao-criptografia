@@ -14,9 +14,7 @@ from cripto_base import (
 )
 from setup_eleicao import executar_setup_fase2
 
-# =====================================================================
 # TASK 3.1: Estrutura do Quadro Público (Bulletin Board)
-# =====================================================================
 
 def serializar_canonico(dados) -> str:
     """
@@ -81,9 +79,7 @@ class QuadroPublico:
         return quadro
 
 
-# =====================================================================
 # TASK 3.2: Lógica do Eleitor
-# =====================================================================
 
 class Eleitor:
     """
@@ -140,9 +136,7 @@ class Eleitor:
         return valido
 
 
-# =====================================================================
 # TASKS 3.3 e 3.4: Servidor recebe, valida, grava e emite recibo
-# =====================================================================
 
 class ServidorEleicao:
     """
@@ -167,7 +161,7 @@ class ServidorEleicao:
         }
         self.quadro = QuadroPublico(configuracao)
 
-    # ---------------- TASK 3.3: validação ----------------
+    # TASK 3.3: Validação
 
     def validar_pacote(self, pacote: dict):
         """
@@ -204,7 +198,7 @@ class ServidorEleicao:
 
         return True, "OK"
 
-    # ---------------- TASK 3.4: gravação e recibo ----------------
+    # TASK 3.4: Gravação e recibo
 
     def receber_voto(self, pacote: dict) -> dict:
         valido, motivo = self.validar_pacote(pacote)
@@ -238,9 +232,7 @@ class ServidorEleicao:
         return {'dados': dados_recibo, 'assinatura_servidor': assinatura}
 
 
-# =====================================================================
 # FLUXO COMPLETO DA FASE 3
-# =====================================================================
 
 if __name__ == "__main__":
 

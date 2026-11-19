@@ -4,9 +4,7 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.exceptions import InvalidSignature
 
-# =====================================================================
 # TASK 1.1: Parâmetros do Grupo (Padrão Oficial RFC 3526 - 2048 bits)
-# =====================================================================
 
 HEX_P = (
     "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1"
@@ -40,9 +38,7 @@ def gerar_numero_aleatorio_seguro(limite_maximo):
     """
     return secrets.randbelow(limite_maximo - 2) + 1
 
-# =====================================================================
 # TASK 1.2: Manipulação de Chaves RSA e Assinaturas Digitais
-# =====================================================================
 
 def gerar_par_chaves_rsa():
     """
@@ -118,9 +114,7 @@ def calcular_hash_sha256(texto: str) -> str:
     """Calcula a 'impressão digital' (Hash SHA-256) de qualquer texto."""
     return hashlib.sha256(texto.encode('utf-8')).hexdigest()
 
-# =====================================================================
 # TASK 1.3: Funções Fundamentais do ElGamal Exponencial
-# =====================================================================
 
 def exp_mod(base: int, expoente: int, modulo: int) -> int:
     """Calcula (base ^ expoente) mod modulo de forma ultra rápida."""
@@ -167,9 +161,7 @@ def somar_cifras_homomorficamente(lista_de_cifras: list, p: int = P):
         
     return (C1_total, C2_total)
 
-# =====================================================================
 # TASK 1.4: Extração de g^M e Busca Exaustiva (Logaritmo Discreto)
-# =====================================================================
 
 def remover_mascara_elgamal(C2_total: int, mascara_combinada_S: int, p: int = P) -> int:
     """
@@ -197,9 +189,7 @@ def decifrar_logaritmo_discreto(g_elevado_M: int, max_votos_possiveis: int, p: i
     raise ValueError("Erro na apuração: O total de votos não foi encontrado dentro do limite esperado (possível voto inválido != 0 ou 1)!")
 
 
-# =====================================================================
 # TESTE PRÁTICO DA FASE 1 (Simulando o fluxo matemático isolado)
-# =====================================================================
 if __name__ == "__main__":
     print("=== INICIANDO TESTES DA FASE 1 ===\n")
 

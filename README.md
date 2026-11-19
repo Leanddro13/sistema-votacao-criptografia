@@ -10,16 +10,21 @@ Implementação de um sistema de votação eletrônica seguro ponta a ponta com 
 ```text
 sistema-votacao-criptografia/
 ├── docs/
-│   ├── especificacao_projeto.md  # Especificação completa, regras e critérios de avaliação
-│   ├── plano_geral.tex           # Documento LaTeX com o plano geral e arquitetura
-│   ├── guia_primeira_fase.md     # Guia didático da Fase 1 (Primitivas criptográficas)
-│   ├── guia_segunda_fase.md      # Guia didático da Fase 2 (Setup da Eleição)
-│   └── guia_terceira_fase.md     # Guia didático da Fase 3 (Votação e Quadro Público)
+│   ├── especificacao_projeto.md        # Especificação completa, regras e critérios de avaliação
+│   ├── plano_geral.tex                 # Documento LaTeX com o plano geral e arquitetura
+│   ├── orientacoes_para_relatorio.md   # Divisão de tarefas do relatório para os 5 integrantes
+│   ├── relatorio_temporario.md         # Estrutura do relatório técnico em Markdown
+│   └── guias/                          # Guias didáticos das fases
+│       ├── guia_primeira_fase.md       # Fase 1: Primitivas criptográficas
+│       ├── guia_segunda_fase.md        # Fase 2: Setup da Eleição
+│       ├── guia_terceira_fase.md       # Fase 3: Votação e Quadro Público
+│       └── guia_quarta_fase.md         # Fase 4: Apuração e Decifração Distribuída
 ├── src/
-│   ├── __init__.py               # Pacote Python
-│   ├── cripto_base.py            # Fase 1: Primitivas ElGamal, RSA, SHA-256 e Grupo RFC 3526
-│   ├── setup_eleicao.py          # Fase 2: Autoridades eleitorais, chave conjunta h e eleitores
-│   └── votacao.py                # Fase 3: Quadro público append-only, cédulas, recibos e validações
+│   ├── __init__.py                     # Pacote Python
+│   ├── cripto_base.py                  # Fase 1: Primitivas ElGamal, RSA, SHA-256 e Grupo RFC 3526
+│   ├── setup_eleicao.py                # Fase 2: Autoridades eleitorais, chave conjunta h e eleitores
+│   ├── votacao.py                      # Fase 3: Quadro público append-only, cédulas, recibos e validações
+│   └── apuracao.py                     # Fase 4: Apuração homomórfica e decifração distribuída
 ├── .gitignore
 ├── README.md
 └── requirements.txt              # Dependências do projeto
@@ -57,6 +62,11 @@ pip install -r requirements.txt
 * **Testar Fluxo de Votação e Ataques Bloqueados (Fase 3):**
   ```bash
   python3 src/votacao.py
+  ```
+
+* **Testar Apuração Homomórfica e Falha de Autoridade (Fase 4):**
+  ```bash
+  python3 src/apuracao.py
   ```
 
 ---
