@@ -75,6 +75,13 @@ class QuadroPublico:
         with open(caminho, 'r', encoding='utf-8') as f:
             dados = json.load(f)
         quadro = cls(dados['configuracao'])
+        # Verifica que o hash_genesis salvo confere com a configuracao
+        # (detecta adulteracao nos parametros da eleicao)
+        if quadro.hash_genesis != dados.get('hash_genesis'):
+            raise ValueError(
+                "Hash de genesis nao confere com a configuracao "
+                "(possivel adulteracao dos parametros da eleicao)."
+            )
         quadro.blocos = dados['blocos']
         return quadro
 
@@ -158,6 +165,10 @@ class ServidorEleicao:
             'h_parciais': servidor_setup.chaves_publicas_parciais,
             'candidatos': candidatos,
             'chave_publica_servidor': self.chave_publica_rsa,
+            'eleitores_cadastrados': {
+                id_eleitor: {'chave_publica_rsa': data['chave_publica_rsa']}
+                for id_eleitor, data in servidor_setup.eleitores_cadastrados.items()
+            },
         }
         self.quadro = QuadroPublico(configuracao)
 
