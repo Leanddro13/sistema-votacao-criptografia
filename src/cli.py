@@ -137,17 +137,19 @@ def _resumo(n, limite=18):
 
 def cmd_setup(args) -> int:
     pastas = Pastas(args.dir)
-    if pastas.base.exists() and any(pastas.base.iterdir()):
-        if not args.forcar:
-            print(f"✗ A pasta '{pastas.base}' já tem uma eleição. Use --forcar para recriar.")
-            return 1
-        shutil.rmtree(pastas.base)
+    # Valida os argumentos ANTES de apagar qualquer coisa (senão um setup inválido
+    # com --forcar destruiria a eleição existente).
     if args.autoridades < 3:
         print("✗ A especificação exige pelo menos 3 autoridades.")
         return 1
     if len(args.candidatos) < 2:
         print("✗ A eleição precisa de pelo menos 2 candidatos.")
         return 1
+    if pastas.base.exists() and any(pastas.base.iterdir()):
+        if not args.forcar:
+            print(f"✗ A pasta '{pastas.base}' já tem uma eleição. Use --forcar para recriar.")
+            return 1
+        shutil.rmtree(pastas.base)
 
     ids = [f"ELEITOR_{i:03d}" for i in range(1, args.eleitores + 1)]
     autoridades, setup, cadastro, h = executar_setup_fase2(args.autoridades, ids)
