@@ -24,7 +24,9 @@ sistema-votacao-criptografia/
 │   ├── cripto_base.py                  # Fase 1: Primitivas ElGamal, RSA, SHA-256 e Grupo RFC 3526
 │   ├── setup_eleicao.py                # Fase 2: Autoridades eleitorais, chave conjunta h e eleitores
 │   ├── votacao.py                      # Fase 3: Quadro público append-only, cédulas, recibos e validações
-│   └── apuracao.py                     # Fase 4: Apuração homomórfica e decifração distribuída
+│   ├── apuracao.py                     # Fase 4: Apuração homomórfica e decifração distribuída
+│   ├── auditor.py                      # Fase 5: Auditor independente (lê só o quadro público)
+│   └── cli.py                          # Fase 5: CLI unificada (setup, votar, auditar, apurar, demo)
 ├── .gitignore
 ├── README.md
 └── requirements.txt              # Dependências do projeto
@@ -70,3 +72,31 @@ pip install -r requirements.txt
   ```
 
 ---
+
+### 4. CLI unificada (Fase 5)
+
+Roteiro completo da apresentação (eleição com 3 autoridades e 5 eleitores, voto duplo rejeitado,
+adulteração detectada pelo auditor e apuração sem uma autoridade falhando), em ~3 segundos:
+
+```bash
+python3 src/cli.py demo            # use --pausa para esperar Enter entre os passos
+```
+
+Passo a passo manual (o estado fica na pasta `eleicao/`, mude com `--dir`):
+
+```bash
+python3 src/cli.py setup                           # 3 autoridades, 5 eleitores, candidatos Alice/Bob/Carol
+python3 src/cli.py votar ELEITOR_001 Alice         # voto cifrado + recibo assinado
+python3 src/cli.py verificar-recibo ELEITOR_001    # eleitor confere o recibo no quadro público
+python3 src/cli.py votar ELEITOR_001 Bob           # REJEITADO: voto duplo
+python3 src/cli.py auditar                         # auditor independente: eleição válida
+python3 src/cli.py encerrar                        # fecha a votação (só então a apuração é permitida)
+python3 src/cli.py adulterar --bloco 2             # simula fraude no quadro público
+python3 src/cli.py auditar                         # auditor detecta a adulteração
+python3 src/cli.py restaurar                       # desfaz a adulteração
+python3 src/cli.py apurar --sem-autoridade 3       # FALHA: falta uma autoridade
+python3 src/cli.py apurar                          # resultado final
+python3 src/cli.py status                          # situação atual
+```
+
+O auditor também roda sozinho, só com o arquivo público: `python3 src/auditor.py eleicao/publico/quadro_publico.json`
